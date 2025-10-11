@@ -51,3 +51,24 @@ cd <project-folder>
 npm install
 
 ```
+
+## 🗄️ Database Setup
+
+This project uses **MongoDB** as its database.  
+By default, it connects to a **local MongoDB instance**, but you can easily switch to **MongoDB Atlas** (cloud) for easier collaboration and deployment.
+
+---
+
+### ⚙️ Option 1: Local MongoDB Setup (Default)
+
+If you have MongoDB installed on your system:
+
+1. Make sure MongoDB is running:
+   ```bash
+   mongod
+   ```
+2. In your .env file, set
+
+MONGO_URI=mongodb://127.0.0.1:27017/ecommerce 3. Start the server
+
+npm run dev
