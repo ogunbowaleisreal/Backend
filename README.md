@@ -33,6 +33,10 @@ It handles authentication, product management, orders, carts, reviews, and payme
 
 ---
 
+## Project Url
+
+[link text] https://roadmap.sh/projects/ecommerce-api
+
 ## ⚙️ Setup & Installation
 
 ### 1️⃣ Clone the Repository

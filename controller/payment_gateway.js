@@ -8,6 +8,8 @@ const body_parser = require('body-parser');
 require('dotenv').config()
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
+// stripe checkout endpont , it generates a simple session for one time payment
+
 const create_checkout_session = async(req,res)=>{
     try{
     const {user_id, address, success_url , cancel_url} = req.body
@@ -44,6 +46,10 @@ const create_checkout_session = async(req,res)=>{
             quantity: item.quantity
         }
     )) 
+
+
+
+    // this is a webhook to really confirm payment status before updating DB
     const stripe_session = await stripe.checkout.sessions.create({
         mode: "payment",
         payment_method_types: ['card'], 
