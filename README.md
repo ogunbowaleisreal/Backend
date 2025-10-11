@@ -68,7 +68,11 @@ If you have MongoDB installed on your system:
    mongod
    ```
 2. In your .env file, set
+   ```bash
+   MONGO_URI=mongodb://127.0.0.1:27017/ecommerce
+   ```
+3. Start the server
 
-MONGO_URI=mongodb://127.0.0.1:27017/ecommerce 3. Start the server
-
-npm run dev
+```bash
+   npm run dev
+```
