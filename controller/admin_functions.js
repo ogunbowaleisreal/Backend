@@ -3,6 +3,7 @@ const ORDERS = require('../model/orders');
 const USERS = require('../model/User');
 const REVIEW = require('../model/reviews');
 const cloudinary = require('../config/cloudinary')
+const ROLES_LIST = require('../config/rolesList')
 require('dotenv').config()
 
 // to create a new product
@@ -10,6 +11,13 @@ const createProduct=async (req,res)=>{
  
     try{
     const {product_name,category,Price,discounted_price,quantity,description} = req.body
+
+    if(!product_name || !category || !Price || !quantity || !description){
+        return res.status(400).json({"message": "bad request"})
+    }
+    if(!req.file){
+        return res.status(400).json({"message":"no image found", "status":400})
+    }
     const result = await cloudinary.uploader.upload(req.file.path,
         {folder:'products_images'}
     )
@@ -27,12 +35,11 @@ const createProduct=async (req,res)=>{
      description :description,
      image_url: optimizedUrl
     })
-    console.log(newProduct)
-    const allProducts = await PRODUCTS.find({})
+
     if(newProduct){
-        return res.status(200).json({"message":"New Product added successfully",newProduct})
+        return res.status(201).json({"message":"New Product added successfully","status":201,newProduct})
     }else{
-        return res.status(403).json({"message":"unallowed credentials, plss review product details and ensure it aligns with allowed paramaters "})
+        return res.status(400).json({"message":"unallowed credentials, plss review product details and ensure it aligns with allowed paramaters "})
     }
 }catch(err){
     console.log(err)
@@ -78,7 +85,7 @@ const getallUsers=async(req,res)=>{
     try{
         const allusers = await USERS.find({}).sort({createdAt:-1})
         if(allusers){
-            return res.status(200).json(allusers)
+            return res.status(200).json({"status":200,allusers})
         }
     }catch(err){
         console.log(err)
@@ -92,6 +99,7 @@ const updateProduct=(req,res)=>{
 }
 
 const createUser=(req,res)=>{
+    const {username, password} = req.body
 
 }
 
@@ -137,8 +145,37 @@ const getallProducts=async (req,res)=>{
     }
 }
 
-const updateUser=(req,res)=>{
-
+const updateUser=async (req,res)=>{
+    try{
+    const role = req.body.role
+    const user_id = req.params.id
+    if(!user_id){
+        return res.status(400).json({"message":"no user_id provided"})
+    }
+    const values =Object.keys(ROLES_LIST)
+    if(values.includes(role)){
+            const user = await USERS.findOne({_id:user_id})
+            if(user){
+                const initial_role = user.roles
+                const role_value = ROLES_LIST[role]
+                if(user.roles.includes(role_value)){
+                    return res.status(400).json({"message": "user already has this role"})
+                    }else{
+                    new_role = initial_role.push(role_value)
+                    user.roles.push(role_value)
+                    await user.save()
+                    return res.status(200).json({"message": `user with id: ${user_id} is now a/an ${role}`})
+                }    
+            }else{
+                return res.status(404).json({"message":`user with id ${user_id} not found`})
+            }
+        }else{
+            return res.status(400).json({"message":"bad request, unsupported role"})
+        }
+   }catch(err){
+    console.log(err)
+    return res.status(500).json({"message": "internal server error"})
+   }
 }
 
 const get_single_user_orders=async(req,res)=>{
@@ -149,9 +186,9 @@ const get_single_user_orders=async(req,res)=>{
         }
         const user_orders = await ORDERS.find({user_id:user_id})
         if(user_orders ==[]){
-            return res.status(200).json({"message": "no orders yet"})
+            return res.status(201).json({"message": "no orders yet"})
         }
-        return res.status(200).json({"message":"", user_orders})
+        return res.status(200).json({"status":200, user_orders})
 
     }catch(err){
         console.log(err)
@@ -175,4 +212,5 @@ const orderDetails=async(req,res)=>{
 }
 
 module.exports = {updateOrder,createProduct,createUser,deleteProduct,
-    updateProduct,getOrders,getallProducts,productDetails,orderDetails,getallUsers, get_single_user_orders}
+    updateProduct,getOrders,getallProducts,productDetails,orderDetails,getallUsers, get_single_user_orders
+, updateUser}

@@ -9,8 +9,8 @@ const getallfeaturedProducts=async(req,res)=>{
 }
 
 const getcartItems = async(req,res)=>{
+    
     try{
-
     const user_id = req.user_id
     console.log(user_id)
     const cart = await CART.findOne({user_id: user_id},{Products: 1}).populate("Products.product_id")
@@ -153,16 +153,16 @@ const getuserOrders=async(req,res)=>{
     const user_id = req.user_id
     const orders = await ORDERS.find({user_id:user_id})
     if(orders.length == 0){
-        return res.status(404).json({"message":"no orders yet"})
+        return res.status(404).json({"message":"no orders yet", "status":404})
     }
-    return res.status(200).json(orders)
+    return res.status(200).json({"status":200,orders})
     }catch(err){
         console.log(err)
         return res.status(500).json({"message":"internal server error"})
     }
 }
 
-const increaseproductQuantity=async(req,res)=>{
+const increase_decrease_product_Quantity=async(req,res)=>{
     const product_id = req.body.product_id;
     const type = req.body.type;
     const user_id = req.user_id;
@@ -335,4 +335,4 @@ const getAllReviews = async(req,res)=>{
 
 module.exports = {createReviews,getallfeaturedProducts,deleteReview
     ,updateReview,getuserOrders,getbyFilter,createOrder, getcartItems,
-     createoraddCart,deletecartItem,increaseproductQuantity};
+     createoraddCart,deletecartItem,increase_decrease_product_Quantity};

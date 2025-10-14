@@ -35,7 +35,7 @@ const authUser = async(req,res)=>{
         }
         return res.status(404).json({"message":"username & password do not match","status":404})
     }
-    return res.status(404).json({"message":"Account not found , register instead ?"})
+    return res.status(404).json({"message":"Account not found , register instead ?", "status": 404})
 }catch(err){
     console.log(err)
     return res.status(401).send("not allowed , wrong credentials sent")

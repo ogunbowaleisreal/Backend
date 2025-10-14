@@ -8,7 +8,7 @@ const logoutController= async(req,res)=>{
     if(!refresh_token){
         console.log("u already logged out")
             const dbToken = await USER.updateOne({refresh_token : refresh_token},{$set:{refresh_token:""}})
-        return res.send('you are already logged out ')
+        return res.status(204).json({"message":'you are already logged out '})
     }else{
     const dbToken = await USER.updateOne({refresh_token : refresh_token},{$set:{refresh_token:""}})
     if(dbToken.modifiedCount == 1){
