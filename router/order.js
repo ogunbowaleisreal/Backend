@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const {updateOrder,getOrders,orderDetails,get_single_user_orders} = require('../controller/admin_functions');
-const {createOrder} = require('../controller/product_functions');
+const { updateOrder, getOrders, orderDetails, get_single_user_orders } = require('../controller/admin_functions');
+const { createOrder } = require('../controller/product_functions');
 const jwtVerify = require('../middleware/verifyJwt');
 const ROLES_LIST = require('../config/rolesList');
-const verifyRoles= require('../middleware/verifyRoles');
+const verifyRoles = require('../middleware/verifyRoles');
 
 /**
  * @swagger
@@ -113,23 +113,11 @@ const verifyRoles= require('../middleware/verifyRoles');
  *       500:
  *         description: Internal server error
  *   post:
- *     summary: Get all orders for a single user
- *     description: Retrieves all orders for the given user ID
+ *     summary: Get all orders for the authenticated user
+ *     description: Retrieves all orders for the currently logged-in user based on their authentication token
  *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - user_id
- *             properties:
- *               user_id:
- *                 type: string
- *                 example: 64f0b123abc1234567890def
  *     responses:
  *       200:
  *         description: User orders retrieved successfully or no orders yet
@@ -140,12 +128,17 @@ const verifyRoles= require('../middleware/verifyRoles');
  *               properties:
  *                 message:
  *                   type: string
+ *                   example: "User orders retrieved successfully"
  *                 user_orders:
  *                   type: array
- *       400:
- *         description: Invalid request (missing user_id)
+ *                   items:
+ *                     type: object
+ *                     description: Order details
+ *       401:
+ *         description: Unauthorized (missing or invalid token)
  *       500:
  *         description: Internal server error
+
  *   patch:
  *     summary: Update an existing order (Admin only)
  *     description: Updates status or payment_status of an order
@@ -186,13 +179,13 @@ const verifyRoles= require('../middleware/verifyRoles');
 
 
 router.route('/')
-      .get(jwtVerify,verifyRoles(ROLES_LIST.Admin),getOrders)
-      .post(jwtVerify,verifyRoles(ROLES_LIST.Admin,ROLES_LIST.User),createOrder)
+      .get(jwtVerify, verifyRoles(ROLES_LIST.Admin), getOrders)
+      .post(jwtVerify, verifyRoles(ROLES_LIST.Admin, ROLES_LIST.User), createOrder)
 
 router.route('/single_order/')
-      .get(jwtVerify,verifyRoles(ROLES_LIST.Admin,ROLES_LIST.User),orderDetails)
-      .post(jwtVerify,verifyRoles(ROLES_LIST.User),get_single_user_orders)
-      .patch(jwtVerify,verifyRoles(ROLES_LIST.Admin),updateOrder)
+      .get(jwtVerify, verifyRoles(ROLES_LIST.Admin, ROLES_LIST.User), orderDetails)
+      .post(jwtVerify, verifyRoles(ROLES_LIST.User), get_single_user_orders)
+      .patch(jwtVerify, verifyRoles(ROLES_LIST.Admin), updateOrder)
 
 
 module.exports = router
