@@ -17,15 +17,15 @@ const options = {
           bearerFormat: "JWT",
         },
       },
-    security: [
-      {
-        bearerAuth: [],
-      },
-    ],
+      security: [
+        {
+          bearerAuth: [],
+        },
+      ],
     },
     servers: [
       {
-        url: 'http://localhost:3500',
+        url: 'https://backend-yj3j.onrender.com/',
       },
     ],
   },
